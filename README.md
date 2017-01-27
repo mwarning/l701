@@ -11,6 +11,7 @@ High level features with no particular order:
 - unsafe low level primitives to build safe high level language primitives
 - small language core, high level concepts implemented via libraries
 - no method overloading a it's core language, but it can be implemented in a library with near zero limitations, same for default arguments and named arguments
+- unified function call syntax: obj.func() is the same as func(obj)
 
 A method called `match` can be implemented in a library that takes two arguments and creates low level code:
 ```
