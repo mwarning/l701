@@ -10,7 +10,7 @@ High level features with no particular order:
 - ability to write calling conventions
 - unsafe low level primitives to build safe high level language primitives
 - small language core, high level concepts implemented via libraries
-- no method overloading a it's core language, but it can be implemented in a library with near zero limitations.
+- no method overloading a it's core language, but it can be implemented in a library with near zero limitations, same for default arguments and named arguments
 
 A method called `match` can be implemented in a library that takes two arguments and creates low level code:
 ```
