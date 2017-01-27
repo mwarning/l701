@@ -1,7 +1,11 @@
 # l701
 
-l701 is an old project name of mine to create a programming language that fulfills what I feel is lacking in modern programming languages.
+l701 is an old project name of mine to create a programming language, hence named l701, that fulfills what I feel is lacking in modern programming languages.
 The name is a reference to the paper "The Next 700 Programming Languages" by P. J. Landin. :-)
+
+ln contrast to building a language on top of logic as done in functional programm languages,
+l701 is meant to constist of a core language based on processor primitives (if, goto .. mostly portable assembler) that allow to go even more low level than C. E.g. to write calling conventions.
+High language contructs are implemented as part of compile time methods and allow to build a strongly typed high level language that enables memory safety with (hopefully) zero overhead abstractions.
 
 High level features with no particular order:
 
@@ -12,6 +16,8 @@ High level features with no particular order:
 - small language core, high level concepts implemented via libraries
 - no method overloading a it's core language, but it can be implemented in a library with near zero limitations, same for default arguments and named arguments
 - unified function call syntax: obj.func() is the same as func(obj)
+- algebraic data types
+- no garabage collector
 
 A method called `match` can be implemented in a library that takes two arguments and creates low level code:
 ```
