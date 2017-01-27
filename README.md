@@ -46,3 +46,9 @@ let y = 1 / v;
 ```
 Types can be changed to express e.g. that a number is not 0.
 A type is compromsed of a set of possible values and properties, expressed by methods that are true (e.g. is_even()).
+
+
+Proposed Base Types:
+* Integer types: i8, u8, u16, i16, u32, u32, u64, i64, ...
+* Floating point types: f16, f32, f64, ..
+* Static array type: u32[12] (12 consecutive u32 integers)
