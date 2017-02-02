@@ -74,11 +74,13 @@ Some examples with possible internal representations:
 * `[a; b, c]` => `opSquareBrackets(opSemicolon(a, OpComma(b, c)))`
 
 ```
-let x = 0
-x += 1
+def main() {
+  let x = 0
+  x += 1
+}
 ```
 =>
-`opLines(opLine(opEqual(let(x), 0)), opLine(opPlusAssign(x, 1)))`
+`opLine(def, opTouch(main, opRoundBrackets, opCurlyBrackets(opLines(opLine(opEqual(let(x), 0)), opLine(opPlusAssign(x, 1))))))`
 
 In the internal representation, `opEqual` would actually be `op=`, opComma would be `op,`.
 Speaking names are used here in these examples to only make the function names appear less cryptic.
