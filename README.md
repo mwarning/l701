@@ -21,6 +21,7 @@ High level features with no particular order:
 - no garabage collector
 - small binary size, mostly due to zero cost abstractions over libc
 - optional output into readable C code would be nice
+- std library that is a compile time wrapper around stdc, this will keep binaries small
 
 A method called `match` can be implemented in a library that takes two arguments and creates low level code:
 ```
