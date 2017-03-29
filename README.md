@@ -10,6 +10,7 @@ High language contructs are implemented as part of compile time methods and allo
 High level features with no particular order:
 
 - syntax is lisp in spirit that looks more like C
+- stdlib base uses compile time functions and libc with compile time wrappers only (e.g. to check the printf format string or to check memory usage at compile time like in rust)
 - immutability by default
 - code can be used at compile time and runtime without modifications
 - ability to write calling conventions
@@ -22,6 +23,8 @@ High level features with no particular order:
 - small binary size, mostly due to zero cost abstractions over libc
 - optional output into readable C code would be nice
 - std library that is a compile time wrapper around stdc, this will keep binaries small
+- universal function calls foo.bar(12) == bar(foo, 12)
+- move semantics by default (implemented in a compile time library)
 
 A method called `match` can be implemented in a library that takes two arguments and creates low level code:
 ```
