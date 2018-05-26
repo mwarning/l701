@@ -91,9 +91,7 @@ Speaking names are used here in these examples to only make the function names a
 
 ## Operator overloading
 Maybe be useful in some cases.
-expr = item1 * item2
-
-transforms to item1.op("*", item2) which might transform to item1.opStar(item2)
+`expr = item1 * item2` transforms to `item1.op("*", item2)` which might transform to `item1.opStar(item2)`
 
 ## Concurrency
 Threads are also modelled as types. That might allow to trigger errors in case of resources being accessed without proper fencing or high level constructs e.g. as  go langauge channels.
