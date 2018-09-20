@@ -74,6 +74,37 @@ Properties of types change when a value was tested. This can prevent undefined b
 Also, <li>if</li> is a compile time function that accepts three arguments and inserts code into the abstract syntax tree (AST).
 </section>
 
+The AST consists of function call objects linked to compiler intrinsics. This intermediate representation resembels Lisp expressions.
+
+Function cannot be overlaoded, but argument dispatch can be done at compile time. Thus, function overload can be emulated.
+
+<pre><code class="language-yap">
+fnc test(element: ast) ast {
+  match element {
+    Ast::CurlyScope: {
+      ast printf("curly scope\n");
+    },
+    _: {
+      ast printf("some other item\n");
+    }
+  }
+}
+
+fn main() {
+  test {};
+}
+</code></pre>
+
+<i>fnc</i> functions are evaluated at compile time. They accept some unevaluated- (<i>ast</i>) or evaluated (<i>astc</i>) AST elements.
+At compile time, the code example will evaluate to this code at compile time:
+
+<pre><code class="language-yap">
+
+fn main() {
+  printf("curly scope\n");
+}
+</code></pre>
+
 <a href="comparision.html">Comparision</a> to other programming languages.
 
 </body>
