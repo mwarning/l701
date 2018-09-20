@@ -1,17 +1,23 @@
 
 struct A {
-	B* b
+	b : *B
 }
 
 struct B {
-	A* a
+	a : *A
+}
+
+fn foo(a : *A, b : *B) {
+	a.b = b;
+	b.a = a;
 }
 
 fn main() {
 	let a = A::new();
 	let b = B::new();
-	a.b = b;
-	b.a = a;
+
+	foo(a, b);
+
 	/*
 	How to prove that each others reference is valid and both have the same lifetime?
 	*/

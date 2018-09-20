@@ -9,6 +9,7 @@ High language contructs are implemented as part of compile time methods and allo
 
 High level features with no particular order:
 
+- A language that grows with your skills and needs for high or low level
 - syntax is lisp in spirit that looks more like C
 - stdlib base uses compile time functions and libc with compile time wrappers only (e.g. to check the printf format string or to check memory usage at compile time like in rust)
 - immutability by default
@@ -95,3 +96,22 @@ Maybe be useful in some cases.
 
 ## Concurrency
 Threads are also modelled as types. That might allow to trigger errors in case of resources being accessed without proper fencing or high level constructs e.g. as  go langauge channels.
+
+## External Links
+
+Links to inspiring resources:
+* http://smallcultfollowing.com/babysteps/blog/2016/04/27/non-lexical-lifetimes-introduction/
+* Rust language borrowing
+* http://www.reddit.com/r/programming/comments/i64g6/ispc_a_clike_language_and_compiler_for_spmd/
+* http://www.emulators.com/docs/nx25_nostradamus.htm
+* http://www.reddit.com/r/programming/comments/hlcci/logical_types_for_untyped_languages_pdf/
+* Fortran speed: http://en.wikipedia.org/wiki/Pointer_aliasing
+* http://drdobbs.com/blogs/architecture-and-design/228701625
+* http://www.reddit.com/r/programming/comments/a3l91/what_is_so_special_about_google_go/
+* http://golang.org/doc/go_for_cpp_programmers.html#Channels
+* http://scienceblogs.com/goodmath/2009/11/googles_new_language_go.php
+* http://llvm.org/docs/LangRef.html#i_getelementptr
+* http://www.rebol.com/oneliners.html
+* http://www.reddit.com/r/programming/comments/a0lla/hacking_c_from_c/
+* http://locklessinc.com/articles/256bit_arithmetic/
+* http://pyevolve.sourceforge.net/wordpress/?p=914
