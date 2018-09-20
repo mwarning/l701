@@ -1,0 +1,13 @@
+
+body {
+  font: 14px/1.5 "Noto Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: normal;
+  color: #727272;
+  font-weight: 500;
+}
+
+section {
+  width: 550px;
+  float: right;
+  padding-bottom: 50px;
+}
