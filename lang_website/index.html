@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="css/prism-coy.min.css"/>
+<link rel="stylesheet" href="css/fontawesome-all-v5.3.1.css">
+<style>
+section {
+    width: 550px;
+    float: right;
+    padding-bottom: 50px;
+}
+</style>
+</head>
+<body>
+<script src="js/prism.min.js"></script>
+
+<script>
+  Prism.languages['yap'] = Prism.languages.extend('clike', {
+    'keyword': /\b(u8|u16|u32|u64|i8|i16|i32|i64|usize|isize|struct|fn|trait|typedef|var|private|public|static|union|const)\b/,
+    'property': /\b(as|in|else|for|if|then|else|do|while|match|default|unsafe|sizeof|true|false|null|return)\b/,
+    'tag': /\b(import)\b/,
+    'important': /\b[A-Z][a-zA-Z0-9_]*\b/,
+  });
+</script>
+
+<h1>Yet Another Programming Language</h1>
+
+  <i class="fas fa-user"></i> <!-- uses solid style -->
+  <i class="far fa-user"></i> <!-- uses regular style -->
+  <i class="fal fa-user"></i> <!-- uses light style -->
+  <!--brand icon-->
+  <i class="fab fa-github-square"></i> <!-- uses brands style -->
+
+<section>
+YAP is yet another programming language. It is inspired by Rust/C/Lisp and other languages.
+But apart from other languages, it does have no implementation. This makes many thing much easier compared to other languages.
+Please insert "if it would exist" where necessary. :-)
+
+The target platform are embedded devices but also high performance applications.
+Main features:
+<ul>
+<li>Small core language.</li>
+<li>libc is used as a standard library inlcuding a compile time wrapper to add more convenience and type safety</li>
+<li>Compile time code execution and code generation (no need for macros).</li>
+<li>Inline assembler support with type safe access to regular code.</li>
+<li>Const and move semantic by default (like in Rust)</li>
+<li>Closures and nested functions.</li>
+<li>Seamingless C/C++ integration.</li>
+</ul>
+
+YAP uses the C standard library with a compile time type system on top to prevent many error cases.
+<pre><code class="language-yap">
+fn main() {
+  var s = "Hello World!";
+  print("{}\n", s);
+}
+</code></pre>
+
+The <i>print</i> method creates the correct stdc call to printf at compile time that is equivalent to this code:
+<pre><code class="language-yap">
+include "stdio.h";
+
+fn main() {
+  var s = "Hello World!";
+  std.printf("%s\n", s);
+}
+</code></pre>
+
+<pre><code class="language-yap">
+fn calc(n: u32) {
+  if (n > 0) {
+    print("{}\n", 42 / n);
+  } {
+    print("Divison by 0!\n");
+  };
+}
+</code></pre>
+This compiles, because the type of <li>n</li> at the position of the division indicates that it is greater 0.
+Properties of types change when a value was tested. This can prevent undefined behavior and allows better optimizations.
+</section>
+
+</body>
