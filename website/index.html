@@ -23,7 +23,7 @@
 
 <section>
 YAP is yet another programming language. It is inspired by Rust/C/Lisp and other languages.
-But apart from other languages, it does have no implementation. This makes many thing much easier compared to other languages.
+But apart from other languages, it does have no implementation. This makes many thing much easier.
 Please insert "if it would exist" where necessary. :-)
 
 Feel free to submit your own code examples!
@@ -33,7 +33,8 @@ Main features:
 <ul>
 <li>Small core language.</li>
 <li>Small binary size.</li>
-<li>libc is used as a standard library inlcuding a compile time wrapper to add more convenience and type safety</li>
+<li>Ability to create up a very strong type system if necessary.</li>
+<li>Standard library is only linked in when used. It has the same <i>default</i> level of importance than stdc.</li>
 <li>Compile time code execution and code generation (no need for macros).</li>
 <li>Inline assembler support with type safe access to regular code.</li>
 <li>Const and move semantic by default (as in Rust)</li>
@@ -42,68 +43,104 @@ Main features:
 <li>Seamingless C/C++ integration.</li>
 </ul>
 
-YAP uses the C standard library with a compile time type system on top to prevent many error cases.
-<pre><code class="language-yap">
-fn main() {
-  var s = "Hello World!";
-  print("{}\n", s);
-}
-</code></pre>
+YAP use a core library, that contains only compile time elements, such as type definitions and compile time methods that have no overhead, but make things easier and safer.
 
-The <i>print</i> method creates the correct stdc call to printf at compile time that is equivalent to this code:
 <pre><code class="language-yap">
-include "stdio.h";
+import std;
 
 fn main() {
   var s = "Hello World!";
-  std.printf("%s\n", s);
+  std::print("{}\n", s);
 }
 </code></pre>
 
 <pre><code class="language-yap">
-fn calc(n: u32) {
+import stdc;
+
+fn main() {
+  var s = "Hello World!";
+  stdc.printf("%s\n", s);
+}
+</code></pre>
+
+<pre><code class="language-yap">
+fn calc(n : u32) {
   if (n > 0) {
     print("{}\n", 42 / n);
-  } {
+  } else {
     print("Divison by 0!\n");
   };
 }
 </code></pre>
 This compiles, because the type of <li>n</li> at the position of the division indicates that it is greater 0.
 Properties of types change when a value was tested. This can prevent undefined behavior and allows better optimizations.
-Also, <li>if</li> is a compile time function that accepts three arguments and inserts code into the abstract syntax tree (AST).
+Also, <li>if</li> is a compile time function that accepts four arguments and inserts code into the abstract syntax tree (AST).
+
 </section>
 
-The AST consists of function call objects linked to compiler intrinsics. This intermediate representation resembels Lisp expressions.
+The AST consists of function call objects linked to compiler intrinsics. This intermediate representation resembels a simple Lisp data structure, called S-Expressions. Yap code is essential a data structure.
 
-Function cannot be overlaoded, but argument dispatch can be done at compile time. Thus, function overload can be emulated.
+The previous code example would be represent as this AST at compile time:
 
 <pre><code class="language-yap">
+fn(opNone(calc, opColon(n, u32)),
+  opCurlyScope(if(opRoundScope(opGreater(n, 0)))),
+  opCurlyScope(print({}\n", opDiv(42, n))),
+  else,
+  opCurlyScope(print("Divison by 0!\n"))
+)
+</code></pre>
+
+This structure allows elegant matching on ast elements.
+
+
+
+Function cannot be overloaded, but argument dispatch can be done at compile time. Thus, function overload can be emulated.
+
+<pre><code class="language-yap">
+fn print_number(num: u32) {
+  print("{}\n", num);
+}
+
+fn print_string(str: String) {
+  print("{}\n", str);
+}
+
 fnc test(element: ast) ast {
-  match element {
-    Ast::CurlyScope: {
-      ast printf("curly scope\n");
-    },
-    _: {
-      ast printf("some other item\n");
-    }
+  if (element.type == Ast::ElementType::NumberLiteral) {
+      return ast print_number($element);
   }
+
+  if (element.type == Ast::ElementType::StringLiteral) {
+    return ast print_string($element);
+  }
+
+  return ast printf("No printing done.\n");
 }
 
 fn main() {
-  test {};
+  test(42);
 }
 </code></pre>
 
-<i>fnc</i> functions are evaluated at compile time. They accept some unevaluated- (<i>ast</i>) or evaluated (<i>astc</i>) AST elements.
+<i>fnc</i> functions are evaluated at compile time. They accept some unevaluated- or evaluated AST elements of type <i>ast</i>/<i>astc</i>.
 At compile time, the code example will evaluate to this code at compile time:
 
 <pre><code class="language-yap">
+fn print_number(num: u32) {
+  print("{}\n", num);
+}
+
+fn print_string(str: String) {
+  print("{}\n", str);
+}
 
 fn main() {
-  printf("curly scope\n");
+  print_number(42);
 }
 </code></pre>
+
+While the compile time features allow lots of extensiobility, this is actually meant to build strict program contructs on top.
 
 <a href="comparision.html">Comparision</a> to other programming languages.
 
