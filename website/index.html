@@ -43,7 +43,8 @@ Main features:
 <li>Seamingless C/C++ integration.</li>
 </ul>
 
-YAP use a core library, that contains only compile time elements, such as type definitions and compile time methods that have no overhead, but make things easier and safer.
+YAP use a core library, that contains only compile time elements or code that is so small that it is inlined.
+This mean type declarations and bsic compile time code generation helpers.
 
 <pre><code class="language-yap">
 import std;
@@ -141,6 +142,42 @@ fn main() {
 </code></pre>
 
 While the compile time features allow lots of extensiobility, this is actually meant to build strict program contructs on top.
+
+
+<pre><code class="language-yap">
+struct MyInteger {
+  min: u64,
+  max: u64,
+  bool is_defined
+}
+
+impl MyInteger {
+  fnc new() -> MyInteger {
+    MyInteger
+  }
+
+  if greater
+}
+
+fn main(n: u32) {
+  var n = MyInteger::new(n);
+  if n > 3 {
+    if n < 5 {
+     // n might be replaced by 4
+     print("{}\n", n);
+    } else {
+      // Compile time error because u32 might overflow
+      n += 1;
+    }
+  }
+}
+</code></pre>
+
+The Rust programming language needs to use duplicate functions to get a non-mutable reference and mutable reference (e.g.: get() and get_mut()).
+The implementations of these methods are identical. YAP infers this in the compiler without the use of annotations. Only one implementation is needed.
+
+TODO: sorted list keeps being sorted
+
 
 <a href="comparision.html">Comparision</a> to other programming languages.
 
