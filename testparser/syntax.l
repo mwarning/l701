@@ -27,9 +27,20 @@ SL "([^"]|\\")*"
 
 %%
 
-\ *  /* ignore */
+\ *  ; /* ignore spaces */
 \n   yycolumn = 1;
-\(   return LPAREN;
-\)   return RPAREN;
-[a-z]* yylval->string.str = yytext; yylval->string.len = yyleng; return STRING;
+\n\n yycolumn = 2; return DOUBLE_NEWLINE;
+";"  yycolumn = 2; return SEMICOLON;
+\(   return LCURVEDPAREN;
+\)   return RCURVEDPAREN;
+\[   return LSQUAREPAREN;
+\]   return RSQUAREPAREN;
+\{   return LCURLYPAREN;
+\}   return RCURLYPAREN;
+"="  return EQUAL;
+"+"  return PLUS;
+"*"  return MUL;
+"//"[^\n]*"\n"  return COMMENT;
+[0-9]*          *yylval = ast_new(yytext, yyleng); return NUMBER; //yylval->number.str = yytext; yylval->number.len = yyleng; return NUMBER;
+[a-zA-Z]*       *yylval = ast_new(yytext, yyleng); return STRING; //yylval->string.str = yytext; yylval->string.len = yyleng; return STRING;
 .  fprintf(stderr, "%d:%d: Unknown token: %.*s\n", yylineno, yycolumn, yyleng, yytext);

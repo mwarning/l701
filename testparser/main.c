@@ -19,7 +19,8 @@ int main(int argc, const char** argv)
 		}
 	}
 
-	struct top_level top;
+	//struct top_level top;
+	struct ast *root = ast_new("root", 0);
 
 	yyscan_t scanner;
 
@@ -29,8 +30,11 @@ int main(int argc, const char** argv)
 	} else {
 		yyset_in(stdin, scanner);
 	}
-	int rc = yyparse(scanner, &top);
+	int rc = yyparse(scanner, root);
 	yylex_destroy(scanner);
+
+	printf("AST:\n");
+	ast_print(root, 0);
 
 	return rc;
 }
