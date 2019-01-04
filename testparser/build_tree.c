@@ -71,9 +71,20 @@ void ast_free(struct ast *root) {
 	free(root);
 }
 
+struct ast *ast_insert(const char *name, struct ast *parent, struct ast *child) {
+	struct ast *item;
+printf("ast_add(%p, %p)\n", parent, child);
+	item = ast_new(name, 0);
+	ast_add(item, child);
+	ast_add(parent, item);
+
+	return item;
+}
+
 void ast_add(struct ast *root, struct ast *item) {
 	int len = ast_args_len(root);
 
+	//printf("ast_add(%p, %p)\n", root, item);
 	if (len) {
 		root->args = (struct ast**) realloc(root->args, (len + 1) * sizeof(struct ast*));
 	} else {

@@ -24,6 +24,7 @@ struct ast {
 };
 
 struct ast *ast_new(const char* name, int len);
+struct ast * ast_insert(const char *name, struct ast *parent, struct ast *child);
 void ast_add(struct ast *root, struct ast *item);
 void ast_free(struct ast *root);
 void ast_print(const struct ast *root, int indent);

@@ -31,12 +31,12 @@ SL "([^"]|\\")*"
 \n   yycolumn = 1;
 \n\n yycolumn = 2; return DOUBLE_NEWLINE;
 ";"  yycolumn = 2; return SEMICOLON;
-\(   return LCURVEDPAREN;
-\)   return RCURVEDPAREN;
-\[   return LSQUAREPAREN;
-\]   return RSQUAREPAREN;
-\{   return LCURLYPAREN;
-\}   return RCURLYPAREN;
+"("   return '(';
+")"   return ')';
+"["  return '[';
+"]"   return ']';
+"{"   return '{';
+"}"   return '}';
 "="  return EQUAL;
 "+"  return PLUS;
 "*"  return MUL;

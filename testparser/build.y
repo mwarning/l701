@@ -40,12 +40,6 @@ void yyerror(YYLTYPE *yylval, yyscan_t scanner, struct ast *root, char const *ms
 }
 
 %token end_of_file 0 "end of file"
-%token LCURVEDPAREN
-%token RCURVEDPAREN
-%token LSQUAREPAREN;
-%token RSQUAREPAREN;
-%token LCURLYPAREN;
-%token RCURLYPAREN;
 %token SEMICOLON;
 %token DOUBLE_NEWLINE;
 %token COMMENT
@@ -58,9 +52,12 @@ void yyerror(YYLTYPE *yylval, yyscan_t scanner, struct ast *root, char const *ms
 %%
 
 start:
-	LCURVEDPAREN STRING RCURVEDPAREN { $$ = ast_new("()", 2); ast_add($$, $1); ast_add(root, $$); }
-	| LSQUAREPAREN NUMBER RSQUAREPAREN { $$ = ast_new("[]", 2); ast_add($$, $1); ast_add(root, $$); }
+	'(' STRING ')' { root = ast_insert("()", root, $2); }
+	| '[' NUMBER ']' { root = ast_insert("[]", root, $2); }
 	//| <<EOF>> { out = $$; printf("done\n"); }
+
+// statements: statements | statement
+//statement: statements delimiter statement
 
 program:
   %empty {
