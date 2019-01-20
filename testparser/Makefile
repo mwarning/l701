@@ -1,6 +1,6 @@
 
 
-SOURCES = main.c build_lex.c build_parse.c build_tree.c
+SOURCES = main.c build_lex.c build_parse.c ast.c utils.c
 
 CC = gcc
 CFLAGS = -g -W -Wall # -Werror

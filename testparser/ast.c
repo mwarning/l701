@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "build_tree.h"
+#include "ast.h"
 
 
 void ast_print(const struct ast *ast, int indent) {
@@ -74,12 +74,12 @@ void ast_free(struct ast *root) {
 	free(root);
 }
 
-struct ast *ast_new_add(const char *name, struct ast *c1, struct ast *c2) {
+struct ast *ast_new_add(const char *name, struct ast *c1, struct ast *c2, int start, int end) {
 	if (0 == strcmp(c1->name, name)) {
 		ast_add(c1, c2);
 		return c1;
 	} else {
-		struct ast *c = ast_new(name, 0, 0, 0);
+		struct ast *c = ast_new(name, 0, start, end);
 		ast_add(c, c1);
 		ast_add(c, c2);
 		return c;

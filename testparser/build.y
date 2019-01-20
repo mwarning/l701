@@ -19,7 +19,18 @@
 */
 
 %code requires {
-#include "build_tree.h"
+#include "ast.h"
+
+#define YYLTYPE yyltype
+typedef struct yyltype
+{
+	int first_line;
+	int first_column;
+	int last_line;
+	int last_column;
+	int start;
+	int end;
+} yyltype;
 
 #define YYSTYPE struct ast*
     typedef void *yyscan_t;
@@ -47,7 +58,7 @@ void yyerror(YYLTYPE *yylval, yyscan_t scanner, struct ast *root, char const *ms
 %token NUMBER
 %token '-' '+' '*' '/' '=' '.'
 
-/* operator precedence - first ones have higher precedence */
+/* operator precedence - first ones have lower precedence */
 %left ':'
 %left '+' '-'
 %left '*' '/'
@@ -56,60 +67,34 @@ void yyerror(YYLTYPE *yylval, yyscan_t scanner, struct ast *root, char const *ms
 
 %%
 
-/*
-a = b; b = c;
-{
-	foo()
-};
-{
-	bar(1, 3; 4 + 5).x 12
-}
-a.b.c[];
-a+c + d
-
-foo { foo sd sd sd; }
-[1, 2, 3; 4, 5, 6]
-a.b.c()[12]
-var x = { a: 12, c: 34}
-struct foo {
-}
-
-- matrix ()
-- webrtc
-- preview
-- chat feature (dtn)
-- bugfixing / polishing (android versionen)
-
-*/
-
 start:
-	expr_list expr_end { printf("start\n"); ast_add(root, $1); }
+	expr_list expr_end { ast_add(root, $1); }
 
 expr_end:
 	%empty
 	| ';'
 
 expr_list:
-	expr { printf("expr\n"); $$ = $1; }
-	| expr_list ',' expr { printf("expr_list ',' expr\n"); $$ = ast_new_add(",", $1, $3); }
-	| expr_list ';' expr { printf("expr_list ';' expr\n"); $$ = ast_new_add(";", $1, $3); }
+	expr { $$ = $1; }
+	| expr_list ',' expr { $$ = ast_new_add(",", $1, $3, @2.start, @2.end); }
+	| expr_list ';' expr { $$ = ast_new_add(";", $1, $3, @2.start, @2.end); }
 
 expr:
 	NUMBER { printf("parse number: %s\n", $1->name); $$ = $1; }
 	| STRING { printf("parse string: %s\n", $1->name); $$ = $1; }
-	| expr '+' expr { printf("parse %s + %s\n", $1->name, $3->name); $$ = ast_new_add("+", $1, $3); }
-	| expr '-' expr { printf("parse %s + %s\n", $1->name, $3->name); $$ = ast_new_add("-", $1, $3); }
-	| expr '*' expr { printf("parse %s * %s\n", $1->name, $3->name); $$ = ast_new_add("*", $1, $3); }
-	| expr '/' expr { printf("parse %s * %s\n", $1->name, $3->name); $$ = ast_new_add("/", $1, $3); }
-	| expr '.' expr { printf("parse %s . %s\n", $1->name, $3->name); $$ = ast_new_add(".", $1, $3); }
-	| expr '=' expr { printf("parse %s = %s\n", $1->name, $3->name); $$ = ast_new_add("=", $1, $3); }
-	| expr ':' expr { printf("parse %s : %s\n", $1->name, $3->name); $$ = ast_new_add(":", $1, $3); }
+	| expr '+' expr { $$ = ast_new_add("+", $1, $3, @2.start, @2.end); }
+	| expr '-' expr { $$ = ast_new_add("-", $1, $3, @2.start, @2.end); }
+	| expr '*' expr { $$ = ast_new_add("*", $1, $3, @2.start, @2.end); }
+	| expr '/' expr { $$ = ast_new_add("/", $1, $3, @2.start, @2.end); }
+	| expr '.' expr { $$ = ast_new_add(".", $1, $3, @2.start, @2.end); }
+	| expr '=' expr { $$ = ast_new_add("=", $1, $3, @2.start, @2.end); }
+	| expr ':' expr { $$ = ast_new_add(":", $1, $3, @2.start, @2.end); }
 	| scope
 
 scope:
-	  '(' ')' { $$ = ast_new("()", 0, 0, 0); }
-	| '[' ']' { $$ = ast_new("[]", 0, 0, 0); }
-	| '{' '}' { $$ = ast_new("{}", 0, 0, 0); }
-	| '(' expr_list ')' { $$ = ast_new("()", 0, 0, 0); ast_add($$, $2); }
-	| '[' expr_list ']' { $$ = ast_new("[]", 0, 0, 0); ast_add($$, $2); }
-	| '{' expr_list '}' { $$ = ast_new("{}", 0, 0, 0); ast_add($$, $2); }
+	  '(' ')' { $$ = ast_new("()", 0, @1.start, @2.end); }
+	| '[' ']' { $$ = ast_new("[]", 0, @1.start, @2.end); }
+	| '{' '}' { $$ = ast_new("{}", 0, @1.start, @2.end); }
+	| '(' expr_list ')' { $$ = ast_new("()", 0, @1.start, @3.end); ast_add($$, $2); }
+	| '[' expr_list ']' { $$ = ast_new("[]", 0, @1.start, @3.end); ast_add($$, $2); }
+	| '{' expr_list '}' { $$ = ast_new("{}", 0, @1.start, @3.end); ast_add($$, $2); }

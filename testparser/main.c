@@ -2,9 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "build_tree.h"
 #include "build_parse.h"
 #include "build_lex.h"
+#include "utils.h"
+#include "ast.h"
 
 
 int main(int argc, const char** argv) {
@@ -30,6 +31,7 @@ int main(int argc, const char** argv) {
 	} else {
 		yyset_in(stdin, scanner);
 	}
+
 	int rc = yyparse(scanner, root);
 	yylex_destroy(scanner);
 

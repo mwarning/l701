@@ -19,7 +19,8 @@
 		yylloc->first_column = yylloc->last_column; \
 		yylloc->last_line = yylineno; \
 		yylloc->last_column = yycolumn; \
-		yycolumn += yyleng; \
+		yylloc->start = yylloc->end; \
+		yylloc->end = yylloc->end + yyleng; \
 	}
 %}
 
@@ -42,7 +43,7 @@ SL "([^"]|\\")*"
 "/"    return '/';
 "="    return '=';
 "//"[^\n]*"\n"  return COMMENT;
-[=+\-*/^]*	    *yylval = ast_new(yytext, yyleng, 0, yylloc->last_column); return OP;
-[0-9]*          *yylval = ast_new(yytext, yyleng, 0, yylloc->last_column); return NUMBER; //yylval->number.str = yytext; yylval->number.len = yyleng; return NUMBER;
-[a-zA-Z_]*      *yylval = ast_new(yytext, yyleng, 0, yylloc->last_column); return STRING; //yylval->string.str = yytext; yylval->string.len = yyleng; return STRING;
+[=+\-*/^]*	    *yylval = ast_new(yytext, yyleng, yylloc->start, yylloc->end); return OP;
+[0-9]*          *yylval = ast_new(yytext, yyleng, yylloc->start, yylloc->end); return NUMBER; //yylval->number.str = yytext; yylval->number.len = yyleng; return NUMBER;
+[a-zA-Z_]*      *yylval = ast_new(yytext, yyleng, yylloc->start, yylloc->end); return STRING; //yylval->string.str = yytext; yylval->string.len = yyleng; return STRING;
 .               fprintf(stderr, "%d:%d: Unknown token: %.*s\n", yylineno, yycolumn, yyleng, yytext);
