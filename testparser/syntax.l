@@ -44,6 +44,6 @@ SL "([^"]|\\")*"
 "="    return '=';
 "//"[^\n]*"\n"  return COMMENT;
 [=+\-*/^]*	    *yylval = ast_new(yytext, yyleng, yylloc->start, yylloc->end); return OP;
-[0-9]*          *yylval = ast_new(yytext, yyleng, yylloc->start, yylloc->end); return NUMBER; //yylval->number.str = yytext; yylval->number.len = yyleng; return NUMBER;
-[a-zA-Z_]*      *yylval = ast_new(yytext, yyleng, yylloc->start, yylloc->end); return STRING; //yylval->string.str = yytext; yylval->string.len = yyleng; return STRING;
+[0-9]*          *yylval = ast_new(yytext, yyleng, yylloc->start, yylloc->end); return NUMBER;
+[a-zA-Z_]*      *yylval = ast_new(yytext, yyleng, yylloc->start, yylloc->end); return STRING;
 .               fprintf(stderr, "%d:%d: Unknown token: %.*s\n", yylineno, yycolumn, yyleng, yytext);

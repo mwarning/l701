@@ -1,7 +1,7 @@
 %define api.pure full
 %define parse.error verbose
 %param {yyscan_t scanner}
-%parse-param {struct ast *root}
+%parse-param {struct top *top}
 %locations
 
 //%lex-param {yyscan_t scanner}
@@ -19,7 +19,7 @@
 */
 
 %code requires {
-#include "ast.h"
+#include "main.h"
 
 #define YYLTYPE yyltype
 typedef struct yyltype
@@ -41,10 +41,10 @@ typedef struct yyltype
 
 #include <stdio.h>
 
-void yyerror(YYLTYPE *yylval, yyscan_t scanner, struct ast *root, char const *msg)
+void yyerror(YYLTYPE *yylval, yyscan_t scanner, struct top *top, char const *msg)
 {
 	(void) scanner;
-	(void) root;
+	(void) top;
     fprintf(stderr, "%d:%d: %s\n", yylval->first_line, yylval->first_column, msg);
 }
 
@@ -68,7 +68,7 @@ void yyerror(YYLTYPE *yylval, yyscan_t scanner, struct ast *root, char const *ms
 %%
 
 start:
-	expr_list expr_end { ast_add(root, $1); }
+	expr_list expr_end { top->root = $1; }
 
 expr_end:
 	%empty
@@ -80,8 +80,8 @@ expr_list:
 	| expr_list ';' expr { $$ = ast_new_add(";", $1, $3, @2.start, @2.end); }
 
 expr:
-	NUMBER { printf("parse number: %s\n", $1->name); $$ = $1; }
-	| STRING { printf("parse string: %s\n", $1->name); $$ = $1; }
+	NUMBER { $$ = $1; }
+	| STRING { $$ = $1; }
 	| expr '+' expr { $$ = ast_new_add("+", $1, $3, @2.start, @2.end); }
 	| expr '-' expr { $$ = ast_new_add("-", $1, $3, @2.start, @2.end); }
 	| expr '*' expr { $$ = ast_new_add("*", $1, $3, @2.start, @2.end); }
