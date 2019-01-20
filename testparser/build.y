@@ -40,31 +40,76 @@ void yyerror(YYLTYPE *yylval, yyscan_t scanner, struct ast *root, char const *ms
 }
 
 %token end_of_file 0 "end of file"
-%token SEMICOLON;
-%token DOUBLE_NEWLINE;
+%token ';'
 %token COMMENT
-%token PLUS
-%token MUL
-%token EQUAL
-%token STRING;
-%token NUMBER;
+%token OP
+%token STRING
+%token NUMBER
+%token '-' '+' '*' '/' '=' '.'
+
+/* operator precedence - first ones have higher precedence */
+%left ':'
+%left '+' '-'
+%left '*' '/'
+%left '.'
+%left '='
 
 %%
 
+/*
+a = b; b = c;
+{
+	foo()
+};
+{
+	bar(1, 3; 4 + 5).x 12
+}
+a.b.c[];
+a+c + d
+
+foo { foo sd sd sd; }
+[1, 2, 3; 4, 5, 6]
+a.b.c()[12]
+var x = { a: 12, c: 34}
+struct foo {
+}
+
+- matrix ()
+- webrtc
+- preview
+- chat feature (dtn)
+- bugfixing / polishing (android versionen)
+
+*/
+
 start:
-	'(' STRING ')' { root = ast_insert("()", root, $2); }
-	| '[' NUMBER ']' { root = ast_insert("[]", root, $2); }
-	//| <<EOF>> { out = $$; printf("done\n"); }
+	expr_list expr_end { printf("start\n"); ast_add(root, $1); }
 
-// statements: statements | statement
-//statement: statements delimiter statement
+expr_end:
+	%empty
+	| ';'
 
-program:
-  %empty {
-    // printf("Empty program\n");
-  }
-  | NUMBER { out = $$; ; printf("done\n"); };
+expr_list:
+	expr { printf("expr\n"); $$ = $1; }
+	| expr_list ',' expr { printf("expr_list ',' expr\n"); $$ = ast_new_add(",", $1, $3); }
+	| expr_list ';' expr { printf("expr_list ';' expr\n"); $$ = ast_new_add(";", $1, $3); }
 
 expr:
-	NUMBER
-	| expr '+' NUMBER { /*printf("%d %d %d\n", $1, $2, $3);*/ }
+	NUMBER { printf("parse number: %s\n", $1->name); $$ = $1; }
+	| STRING { printf("parse string: %s\n", $1->name); $$ = $1; }
+	| expr '+' expr { printf("parse %s + %s\n", $1->name, $3->name); $$ = ast_new_add("+", $1, $3); }
+	| expr '-' expr { printf("parse %s + %s\n", $1->name, $3->name); $$ = ast_new_add("-", $1, $3); }
+	| expr '*' expr { printf("parse %s * %s\n", $1->name, $3->name); $$ = ast_new_add("*", $1, $3); }
+	| expr '/' expr { printf("parse %s * %s\n", $1->name, $3->name); $$ = ast_new_add("/", $1, $3); }
+	| expr '.' expr { printf("parse %s . %s\n", $1->name, $3->name); $$ = ast_new_add(".", $1, $3); }
+	| expr '=' expr { printf("parse %s = %s\n", $1->name, $3->name); $$ = ast_new_add("=", $1, $3); }
+	| expr ':' expr { printf("parse %s : %s\n", $1->name, $3->name); $$ = ast_new_add(":", $1, $3); }
+	| scope
+
+scope:
+	  '(' ')' { $$ = ast_new("()", 0, 0, 0); }
+	| '[' ']' { $$ = ast_new("[]", 0, 0, 0); }
+	| '{' '}' { $$ = ast_new("{}", 0, 0, 0); }
+	| '(' expr_list ')' { $$ = ast_new("()", 0, 0, 0); ast_add($$, $2); }
+	| '[' expr_list ']' { $$ = ast_new("[]", 0, 0, 0); ast_add($$, $2); }
+	| '{' expr_list '}' { $$ = ast_new("{}", 0, 0, 0); ast_add($$, $2); }

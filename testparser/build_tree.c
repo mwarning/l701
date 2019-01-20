@@ -5,14 +5,6 @@
 
 #include "build_tree.h"
 
-/*
-foo { foo sd sd sd; }
-[1, 2, 3; 4, 5, 6]
-a.b.c()[12]
-var x = { a: 12, c: 34}
-struct foo {
-}
-*/
 
 void ast_print(const struct ast *ast, int indent) {
 	struct ast **child;
@@ -26,40 +18,44 @@ void ast_print(const struct ast *ast, int indent) {
 		printf(" ");
 	}
 
-	printf("'%s'\n", ast->name);
+	printf("'%s' (%d - %d)\n", ast->name, ast->start, ast->end);
 
 	child = ast->args;
 	if (child) {
-		while (*child != NULL) {
+		while (*child) {
 			ast_print(*child, indent + 1);
 			child += 1;
 		}
 	}
 }
 
-struct ast *ast_new(const char* name, int len) {
+struct ast *ast_new(const char* name, int len, int start, int end) {
 	struct ast *item;
-
 	if (len <= 0) {
 		len = strlen(name);
 	}
 
 	item = (struct ast*) malloc(sizeof(struct ast));
 	item->name = strndup(name, len);
+	item->start = start;
+	item->end = end;
 	item->args = NULL;
+
+	//printf("ast_new: %s\n", item->name);
 
 	return item;
 }
 
 static int ast_args_len(const struct ast *root) {
-	struct ast **item;
+	struct ast **args;
 	int i;
 
 	i = 0;
-	item = root->args;
-	if (item) {
-		while (*item) {
-			item += 1;
+	args = root->args;
+	if (args) {
+		while (*args) {
+			args += 1;
+			i += 1;
 		}
 	}
 
@@ -67,44 +63,41 @@ static int ast_args_len(const struct ast *root) {
 }
 
 void ast_free(struct ast *root) {
+	int i = 0;
+
+	while (root->args && root->args[i]) {
+		ast_free(root->args[i]);
+		i += 1;
+	}
+
 	free(root->args);
 	free(root);
 }
 
-struct ast *ast_insert(const char *name, struct ast *parent, struct ast *child) {
-	struct ast *item;
-printf("ast_add(%p, %p)\n", parent, child);
-	item = ast_new(name, 0);
-	ast_add(item, child);
-	ast_add(parent, item);
-
-	return item;
+struct ast *ast_new_add(const char *name, struct ast *c1, struct ast *c2) {
+	if (0 == strcmp(c1->name, name)) {
+		ast_add(c1, c2);
+		return c1;
+	} else {
+		struct ast *c = ast_new(name, 0, 0, 0);
+		ast_add(c, c1);
+		ast_add(c, c2);
+		return c;
+	}
 }
 
 void ast_add(struct ast *root, struct ast *item) {
 	int len = ast_args_len(root);
+	//printf("%s: %d\n", root->name, len);
 
 	//printf("ast_add(%p, %p)\n", root, item);
 	if (len) {
-		root->args = (struct ast**) realloc(root->args, (len + 1) * sizeof(struct ast*));
+		root->args = (struct ast**) realloc(root->args, (len + 2) * sizeof(struct ast*));
 	} else {
 		root->args = malloc(2 * sizeof(struct ast*));
 	}
 
 	root->args[len+0] = item;
 	root->args[len+1] = NULL;
+	//printf("%s: %d\n", root->name, ast_args_len(root));
 }
-
-/*
-int consume_string(struct string_t *string)
-{
-	printf("string: '%.*s'\n", string->len, string->str);
-	return 0;
-}
-
-int consume_number(struct number_t *number)
-{
-	printf("number: '%.*s'\n", number->len, number->str);
-	return 0;
-}
-*/

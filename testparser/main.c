@@ -6,8 +6,8 @@
 #include "build_parse.h"
 #include "build_lex.h"
 
-int main(int argc, const char** argv)
-{
+
+int main(int argc, const char** argv) {
 	FILE *myfile = NULL;
 
 	if (argc == 2) {
@@ -20,7 +20,7 @@ int main(int argc, const char** argv)
 	}
 
 	//struct top_level top;
-	struct ast *root = ast_new("root", 0);
+	struct ast *root = ast_new("root", 0, 0, 0);
 
 	yyscan_t scanner;
 
